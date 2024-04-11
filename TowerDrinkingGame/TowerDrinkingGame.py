@@ -56,6 +56,7 @@ class Window():
         self.deck = Deck()
         self.counter = 0
         self.drinkAmount = 0
+        self.totalDrinkAmount = 0
         self.board = self.createBoard()
         self.createWindow()
 
@@ -89,6 +90,7 @@ class Window():
                     button = CTkButton(master=self.master,
                                        image=self.board[row][col].imageBlank,
                                        text="",
+                                       font=("helvetica", 30),
                                        corner_radius=20,
                                        fg_color="grey",
                                        hover_color="dark gray",
@@ -98,9 +100,13 @@ class Window():
                     button.grid(row=row, column=col)
                     self.updatePicture(row, col)
         label = tk.Label(master=self.master,
-                         text="Test",
-                         relief="sunken")
-        label.grid(row=1, column=1)
+                         text="",
+                         relief="sunken",
+                         height=20,
+                         width=50,
+                         borderwidth=10)
+        label.grid(row=1, column=1, columnspan=2, rowspan=2)
+        self.updateLabel()
 
     def updatePicture(self, row: int, col: int, revealed = False):
         self.counter += 1
@@ -128,8 +134,14 @@ class Window():
                 picture = card.imageFace
             else:
                 picture = card.imageBack
-        self.master.grid_slaves(row=row, column=col,)[0].configure(image=picture)
+        self.master.grid_slaves(row=row, column=col)[0].configure(image=picture)
         print(f"{self.counter} - Updated the picture!", flush=True)
+
+    def updateLabel(self, row=1, col=1):
+        updatedText = (f"Tower of Drinks\n"
+                       f"Amount of drinks consumed: {self.totalDrinkAmount}")
+        self.master.grid_slaves(row=row, column=col)[0].configure(text=updatedText, font=("helvetica", 10))
+
         
 
     def revealCard(self, row: int, col: int, mouseBtn: int):
@@ -155,7 +167,10 @@ class Window():
                         self.redealCard(row, col)
                         
                     self.deck.hasHiglighted = None
+                    self.totalDrinkAmount += self.drinkAmount
+                    self.updateLabel()
                     self.drinkAmount = 0
+                    
                     
         else:
             color = ""
