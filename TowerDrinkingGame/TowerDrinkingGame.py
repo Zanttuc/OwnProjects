@@ -11,6 +11,15 @@ ROW_SIZE = 7 #Changing may results in errors
 COL_SIZE = 7 #Changing may results in errors
 pathToImageFolder = "C:/Users/Santeri/Desktop/Omat Projektit/TowerDrinkingGame/Cards/Small"
 
+class Player():
+    def __init__(self, name: str, playerNum: int, row = 1, col = 1):
+        self.drinkCount = 0
+        self.name = name
+        self.playerNum = playerNum
+        self.row = row
+        self.col = col
+        self.cardsOpened = 0
+
 class Card():
     def __init__(self, suit: int, num: int, pathToImage=pathToImageFolder):
         self.suit = suit
@@ -54,11 +63,28 @@ class Window():
     def __init__(self, master):
         self.master = master
         self.deck = Deck()
+        self.players = self.addPlayers()
+        self.activePlayer = 0
         self.counter = 0
         self.drinkAmount = 0
         self.totalDrinkAmount = 0
         self.board = self.createBoard()
         self.createWindow()
+
+    def addPlayers(self):
+        players = []
+        for player in range(4):
+            playerName = f"Player {player+1}"
+            if player == 0:
+                player = Player(playerName, player)
+            elif player == 1:
+                player = Player(playerName, player, 1, 4)
+            elif player == 2:
+                player = Player(playerName, player, 4, 4)
+            elif player == 3:
+                player = Player(playerName, player, 4)
+            players.append(player)
+        return players
 
     def createBoard(self):
         board = []
@@ -82,6 +108,7 @@ class Window():
         print("\n")
                 
     def createWindow(self):
+        #Create buttons for all the cards
         for row in range(ROW_SIZE):
             for col in range(COL_SIZE):
                 if row in [1, 2, 4, 5] and col in [1, 2, 4, 5]:
@@ -99,14 +126,33 @@ class Window():
                     button.bind("<Button-3>", lambda event, r=row, c=col: self.revealCard(r, c, 3))
                     button.grid(row=row, column=col)
                     self.updatePicture(row, col)
-        label = tk.Label(master=self.master,
-                         text="",
-                         relief="sunken",
-                         height=20,
-                         width=50,
-                         borderwidth=10)
-        label.grid(row=1, column=1, columnspan=2, rowspan=2)
-        self.updateLabel()
+
+        #Create labels for player stats
+        for playerLabel in range(4):
+            player = self.players[playerLabel]
+            label = tk.Label(master=self.master,
+                            text="",
+                            height=6,
+                            width=18,
+                            padx=0,
+                            pady=0,
+                            compound="c",
+                            borderwidth=30,
+                            fg="black")
+            
+            label.grid(row=player.row, column=player.col, columnspan=2, rowspan=2)
+            self.updateLabel(player)
+            if playerLabel == 0:
+                self.master.grid_slaves(row=player.row, column=player.col)[0].configure(relief="sunken",
+                                                                                        bd=25,
+                                                                                        bg="#2e2e2e",
+                                                                                        fg="white")
+                
+            button = tk.Button(master=self.master,
+                            text="End turn",
+                            font=("helvetica", 15),
+                            command=lambda num = player.playerNum: self.changePlayer(num))
+            button.grid(row=player.row+1, column=player.col, columnspan=2)
 
     def updatePicture(self, row: int, col: int, revealed = False):
         self.counter += 1
@@ -135,17 +181,20 @@ class Window():
             else:
                 picture = card.imageBack
         self.master.grid_slaves(row=row, column=col)[0].configure(image=picture)
-        print(f"{self.counter} - Updated the picture!", flush=True)
 
-    def updateLabel(self, row=1, col=1):
-        updatedText = (f"Tower of Drinks\n"
-                       f"Amount of drinks consumed: {self.totalDrinkAmount}")
-        self.master.grid_slaves(row=row, column=col)[0].configure(text=updatedText, font=("helvetica", 10))
-
-        
+    def updateLabel(self, player):
+        updatedText = (f"{player.name}\n"
+                       f"Drinks consumed: {player.drinkCount}")
+        self.master.grid_slaves(row=player.row, column=player.col)[0].configure(text=updatedText,
+                                                                                font=("helvetica", 30),
+                                                                                relief="ridge",
+                                                                                bd=8,
+                                                                                bg="light gray",
+                                                                                fg="black")
 
     def revealCard(self, row: int, col: int, mouseBtn: int):
         card = self.board[row][col]
+        player = self.players[self.activePlayer]
 
         #Check that the card is not already revealed
         if not card.isRevealed:
@@ -153,6 +202,8 @@ class Window():
             if self.deck.hasHiglighted != None:
                 #Check that the source card is one of the surrounding cards
                 if self.checkSelected(row+1, col) or self.checkSelected(row-1, col) or self.checkSelected(row, col+1) or self.checkSelected(row, col-1):
+                    player.cardsOpened += 1
+
                     #Update image
                     self.updatePicture(row, col, True)
 
@@ -165,11 +216,13 @@ class Window():
                         self.calculateDrinks(row, col)
                         self.showMessage(mouseBtn)
                         self.redealCard(row, col)
+                        self.changePlayer()
+                        player.drinkCount += self.drinkAmount
+                        self.updateLabel(player)
+                        self.drinkAmount = 0
                         
                     self.deck.hasHiglighted = None
-                    self.totalDrinkAmount += self.drinkAmount
-                    self.updateLabel()
-                    self.drinkAmount = 0
+                    
                     
                     
         else:
@@ -259,7 +312,28 @@ class Window():
         elif messageType == 3:
             messagebox.showerror(title="Game Over", message=f"The card you chose was not smaller!\n"
                                                             f"Drink {self.drinkAmount}!")
-        
+            
+    def changePlayer(self, playerNum = None):
+        previousPlayer = self.players[self.activePlayer]
+
+        if playerNum == None or (playerNum == self.activePlayer and previousPlayer.cardsOpened >= 3):
+            if self.activePlayer < 3:
+                self.activePlayer += 1
+            else:
+                self. activePlayer = 0
+            nextPlayer = self.players[self.activePlayer]
+
+            previousPlayer.cardsOpened = 0
+
+            self.master.grid_slaves(row=nextPlayer.row, column=nextPlayer.col)[0].configure(relief="sunken",
+                                                                                            bd=25,
+                                                                                            bg="#2e2e2e",
+                                                                                            fg="white")
+            self.master.grid_slaves(row=previousPlayer.row, column=previousPlayer.col)[0].configure(relief="ridge",
+                                                                                                    bd=8,
+                                                                                                    bg="light gray",
+                                                                                                    fg="black")
+            
 
     
 
