@@ -1,11 +1,17 @@
+#ifndef LEASE_H
+#define LEASE_H
+
 #include <string>
-#include <ctime>
+#include <chrono>
 
 struct Date {
     int day;
     int month;
     int year;
     int date;
+    
+    // Convert to chrono time_point
+    std::chrono::system_clock::time_point toTimePoint() const;
 };
 
 class Lease
@@ -35,3 +41,5 @@ class Lease
         int m_kmUsed;
         int m_dayDiff;
 };
+
+#endif

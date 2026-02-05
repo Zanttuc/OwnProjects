@@ -1,4 +1,20 @@
 #include "lease.h"
+#include <chrono>
+#include <ctime>
+
+std::chrono::system_clock::time_point Date::toTimePoint() const
+{
+    std::tm timeStruct = {};
+    timeStruct.tm_year = year - 1900;
+    timeStruct.tm_mon = month - 1;
+    timeStruct.tm_mday = day;
+    timeStruct.tm_hour = 0;
+    timeStruct.tm_min = 0;
+    timeStruct.tm_sec = 0;
+    
+    std::time_t time = std::mktime(&timeStruct);
+    return std::chrono::system_clock::from_time_t(time);
+}
 
 void Lease::setPurchaseDate(int date)
 {
@@ -27,8 +43,9 @@ void Lease::setKmUsed(int km)
 
 Date Lease::getCurrentDate()
 {
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+    std::tm* ltm = std::localtime(&now_time);
 
     Date date;
     date.year = 1900 + ltm->tm_year;
@@ -62,25 +79,15 @@ int Lease::getKmUsed()
 
 int Lease::getDLeft(Date targetDate)
 {
-    Date date = getCurrentDate();
-
-    int years = targetDate.year - date.year;
-    int months = targetDate.month - date.month;
-    int days = targetDate.day - date.day;
-
-    if (days < 0) {
-        days += 30; // Assuming average month length
-        months--;
-    }
-
-    if (months < 0) {
-        months += 12;
-        years--;
-    }
-
-    int totalDays = years * 365 + months * 30 + days;
-
-    return totalDays;
+    Date currentDate = getCurrentDate();
+    
+    auto targetTimePoint = targetDate.toTimePoint();
+    auto currentTimePoint = currentDate.toTimePoint();
+    
+    auto duration = targetTimePoint - currentTimePoint;
+    int daysLeft = std::chrono::duration_cast<std::chrono::hours>(duration).count() / 24;
+    
+    return daysLeft > 0 ? daysLeft : 0;
 }
 
 int Lease::getKmLeft()
