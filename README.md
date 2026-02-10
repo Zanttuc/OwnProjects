@@ -51,17 +51,17 @@ A **Python single-file Minesweeper game** with a basic UI built using `tkinter`.
 ```
 python3 ./minesweeperUI.py
 ```
-Features:
+**Features:**
 
 - Standard Minesweeper gameplay
 - Simple, intuitive interface
 - Fully implemented in Python
 ---
-3. TowerDrinkingGame
+### 3. TowerDrinkingGame
 
 A Python card game for social play. Players guess if the next card is higher or lower than a revealed one in a tower-like layout.
 
-Purpose: To create a fun game for friends and practice programming game logic in Python.
+**Purpose:** To create a fun game for friends and practice programming game logic in Python.
 
 Gameplay Overview:
 - Cards are dealt in a tower layout
@@ -70,6 +70,21 @@ Gameplay Overview:
 - Correct guess: continue or pass
 - Wrong guess: turn ends, cards are redealt, and the player drinks the number of redealt cards
 - Game ends when all cards are revealed
+
+**How to run:**
+You need to install a couple of libraries to use the application.
+
+Run the following commands:
+```
+pip install customtkinter
+python -m pip install pillow
+```
+When you have the libraries installed just run ```python3 ./TowerDrinkingGame.py```
+
+**Planned updates:**
+- Make the application window scalable
+- Add a possibility to change player amount
+- Get rid of the popup window after wrong guess and implement it to the player tiles
 ---
 ## About Me
 

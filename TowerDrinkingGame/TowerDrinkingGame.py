@@ -1,6 +1,5 @@
 import tkinter as tk
 import random
-import time
 
 from tkinter import messagebox
 from customtkinter import CTkButton
@@ -9,7 +8,7 @@ from PIL import Image, ImageTk
 #Constants
 ROW_SIZE = 7 #Changing may results in errors
 COL_SIZE = 7 #Changing may results in errors
-pathToImageFolder = "C:/Users/Santeri/Desktop/Omat Projektit/TowerDrinkingGame/Cards/Small"
+pathToImageFolder = "Cards/Small"
 
 class Player():
     def __init__(self, name: str, playerNum: int, row = 1, col = 1):
