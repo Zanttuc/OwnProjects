@@ -2,13 +2,33 @@
 
 Welcome to my personal collection of projects! 🎉  
 
-This repository contains projects I’ve created primarily to **learn new skills, experiment, and challenge myself**. Each project serves as a learning experience and a reflection of my growth as a programmer. Currently, there are **three projects** in this collection:
+This repository contains projects I’ve created primarily to **learn new skills, experiment, and challenge myself**. Each project serves as a learning experience and a reflection of my growth as a programmer. Currently, there are **four projects** in this collection:
 
 ---
 
 ## Projects
 
-### 1. LeasingDistanceCounter
+### 1. BlackJack
+
+A **C++ terminal-based BlackJack game** where players compete against the dealer.
+
+**Purpose:** To practice C++ programming fundamentals including game logic, user input handling, and random number generation.
+
+**How to run:**
+```
+make
+./blackjack <number_of_decks>
+```
+Run `make` to compile the program, then execute it with `./blackjack` followed by the desired number of decks (e.g., `./blackjack 1` for a single deck, `./blackjack 8` for eight decks).
+
+**Features:**
+
+- Play BlackJack against the dealer
+- Configurable deck count via command-line argument
+- Standard BlackJack rules and gameplay
+- Terminal-based user interface
+
+### 2. LeasingDistanceCounter
 A **C++ terminal program** designed to track the remaining kilometers in a personal vehicle leasing contract.  
 
 **Purpose:** To manage my car lease efficiently and practice C++ programming in a simple, functional project.  
@@ -42,7 +62,7 @@ You have 169 kilometers / day left for this year.
 Thank you for using leasing car distance counter - designed by Zanttuc!
 ```
 ---
-### 2. Minesweeper
+### 3. Minesweeper
 A **Python single-file Minesweeper game** with a basic UI built using `tkinter`.  
 
 **Purpose:** To challenge myself to create a working Minesweeper game purely in Python, including the graphical interface, without relying on other UI frameworks.  
@@ -57,7 +77,7 @@ python3 ./minesweeperUI.py
 - Simple, intuitive interface
 - Fully implemented in Python
 ---
-### 3. TowerDrinkingGame
+### 4. TowerDrinkingGame
 
 A Python card game for social play. Players guess if the next card is higher or lower than a revealed one in a tower-like layout.
 
